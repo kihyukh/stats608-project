@@ -1,6 +1,7 @@
 from bandit import Bandit
 from algorithm import Algorithm
 from graph import Graph
+from samplers.sampler import Sampler
 
 class Simulator:
     t = 0
@@ -35,7 +36,8 @@ if __name__ == '__main__':
         (2, 3),
     ], [1, 2, 3, 4])
     bandit = Bandit(g, 4, 0, 3)
-    algorithm = Algorithm(bandit, None)
+    sampler = Sampler(bandit)
+    algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm, 100)
     for t, a, r in sim:
         print(sim.regret / t)

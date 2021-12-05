@@ -1,16 +1,15 @@
 from bandit import Bandit
+from samplers.sampler import Sampler
 import numpy as np
 
 class Algorithm:
-    def __init__(self, bandit: Bandit, sampler):
+    def __init__(self, bandit: Bandit, sampler: Sampler):
         self.bandit = bandit
         self.sampler = sampler
 
     def update(self, t, a, r):
-        # sampler specific logic
-        pass
+        self.sampler.update(t, a, r)
 
     def action(self):
-        # sampler specific logic
-        c = np.random.random(len(self.bandit.graph.edges))
+        c = self.sampler.sample()
         return self.bandit.graph.shortest_path(self.bandit.source, self.bandit.destination, c)
