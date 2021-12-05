@@ -10,11 +10,20 @@ class Graph:
             k: [e[1] for e in edges if e[0] == k] for k in range(num_vertices)
         }
 
+    def is_path(self, path):
+        for i, p in enumerate(path):
+            if p not in self.edges:
+                return False
+            if i > 0 and path[i - 1][1] != p[0]:
+                return False
+        return True
+
+    def path_cost(self, path):
+        assert self.is_path(path)
+        return sum([self.edges[p] for p in path])
+
     def shortest_path(self, source, destination, costs=None):
-        if costs:
-            edges = dict(zip(self.edges.keys(), costs))
-        else:
-            edges = self.edges
+        edges = dict(zip(self.edges.keys(), costs)) if costs is not None else self.edges
         visited = [False] * self.num_vertices
         weights = [np.infty] * self.num_vertices
         path = [None] * self.num_vertices
@@ -25,7 +34,7 @@ class Graph:
             g, u = hq.heappop(queue)
             visited[u] = True
             for v in self.adjacency_lists[u]:
-                w = self.edges[u, v]
+                w = edges[u, v]
                 if not visited[v]:
                     f = g + w
                     if f < weights[v]:
@@ -39,6 +48,7 @@ class Graph:
         while path[c] is not None:
             ret.append((path[c], c))
             c = path[c]
+        ret.reverse()
         return ret
 
 
