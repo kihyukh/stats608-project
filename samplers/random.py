@@ -1,6 +1,7 @@
 from samplers.sampler import Sampler
+import numpy as np
 
-class Gibbs(Sampler):
+class RandomSampler(Sampler):
     def update(self, t, a, r):
         pass
 
