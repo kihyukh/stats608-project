@@ -3,6 +3,7 @@ from algorithm import Algorithm
 from graph import Graph
 from samplers.random import RandomSampler
 from samplers.laplace import LaplaceSampler
+from samplers.langevin import LangevinSampler
 
 class Simulator:
     t = 0
@@ -36,7 +37,7 @@ if __name__ == '__main__':
         (2, 3),
     ], [1, 2, 3, 4])
     bandit = Bandit(g, 4, 0, 3, 1000)
-    sampler = LaplaceSampler(bandit, 2, 2)
+    sampler = LangevinSampler(bandit, 2, 2)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)
     for t, a, r, regret in sim:

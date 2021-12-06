@@ -1,9 +1,13 @@
 from samplers.sampler import Sampler
 from bandit import Bandit
-import util
 import numpy as np
+import scipy as sp
+import util
 
-class LaplaceSampler(Sampler):
+class LangevinSampler(Sampler):
+    B = 10
+    epsilon = 0.001
+
     def __init__(self, bandit: Bandit, alpha, beta):
         super().__init__(bandit, alpha, beta)
         self.history = []
@@ -14,16 +18,6 @@ class LaplaceSampler(Sampler):
         assert len(self.history) == t - 1
         self.history.append((a, r))
 
-    def objective(self, theta, t):
-        ret = np.sum(np.log(theta) * (self.alpha - 1) - self.beta * theta)
-        for i, (path, y) in enumerate(self.history[:t - 1]):
-            cost = self.bandit.graph.path_cost(path, theta)
-            if y == 1:
-                ret -= np.log(1 + np.exp(cost - self.bandit.M))
-            else:
-                ret -= np.log(1 + np.exp(-cost + self.bandit.M))
-        return ret
-
     def sample(self, t):
         theta_0 = self.modes[max(0, t - 2)].copy()
         theta = util.find_mode(
@@ -32,5 +26,17 @@ class LaplaceSampler(Sampler):
 
         _, hessian = util.gradient_hessian(
             theta, self.bandit, self.history, t, self.alpha, self.beta)
-        cov = -np.linalg.inv(hessian)
-        return np.random.multivariate_normal(theta, cov)
+        A = -np.linalg.inv(hessian)
+        A_sqrt = util.sqrtm(A)
+
+        E = len(self.bandit.graph.edges)
+        for b in range(self.B):
+            gradient, _ = util.gradient_hessian(
+                theta, self.bandit, self.history, t, self.alpha, self.beta)
+            W = np.random.normal(0, 1, E)
+            theta += (
+                self.epsilon * (A @ gradient) +
+                np.sqrt(2 * self.epsilon) * (A_sqrt @ W)
+            )
+
+        return theta
