@@ -5,25 +5,30 @@ class Graph:
 
     def __init__(self, num_vertices, edges, costs):
         self.num_vertices = num_vertices
-        self.edges = dict(zip(edges, costs))
-        self.adjacency_lists = {
-            k: [e[1] for e in edges if e[0] == k] for k in range(num_vertices)
+        self.edges = edges
+        self.costs = costs
+        self.edge_lists = {
+            k: [i for i, e in enumerate(edges) if e[0] == k] for k in range(num_vertices)
+        }
+        self.edge_index_map = {
+            (u, v): i for i, (u, v) in enumerate(edges)
         }
 
     def is_path(self, path):
         for i, p in enumerate(path):
-            if p not in self.edges:
+            if p < 0 or p >= len(self.edges):
                 return False
-            if i > 0 and path[i - 1][1] != p[0]:
+            if i > 0 and self.edges[path[i - 1]][1] != self.edges[p][0]:
                 return False
         return True
 
-    def path_cost(self, path):
+    def path_cost(self, path, costs=None):
         assert self.is_path(path)
-        return sum([self.edges[p] for p in path])
+        costs = self.costs if costs is None else costs
+        return sum([costs[p] for p in path])
 
     def shortest_path(self, source, destination, costs=None):
-        edges = dict(zip(self.edges.keys(), costs)) if costs is not None else self.edges
+        costs = self.costs if costs is None else costs
         visited = [False] * self.num_vertices
         weights = [np.infty] * self.num_vertices
         path = [None] * self.num_vertices
@@ -33,8 +38,9 @@ class Graph:
         while len(queue) > 0:
             g, u = hq.heappop(queue)
             visited[u] = True
-            for v in self.adjacency_lists[u]:
-                w = edges[u, v]
+            for e in self.edge_lists[u]:
+                w = costs[e]
+                v = self.edges[e][1]
                 if not visited[v]:
                     f = g + w
                     if f < weights[v]:
@@ -46,7 +52,7 @@ class Graph:
         ret = []
         c = destination
         while path[c] is not None:
-            ret.append((path[c], c))
+            ret.append(self.edge_index_map[path[c], c])
             c = path[c]
         ret.reverse()
         return ret
@@ -60,5 +66,5 @@ if __name__ == '__main__':
         (2, 3),
     ], [1, 2, 3, 4])
 
-    print(g.adjacency_lists)
+    print(g.edge_lists)
     print(g.shortest_path(0, 3))

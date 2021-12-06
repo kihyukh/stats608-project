@@ -5,21 +5,22 @@ class Bandit:
     _best_action = None
     _best_reward = None
 
-    def __init__(self, graph: Graph, M, source, destination):
+    def __init__(self, graph: Graph, M, source, destination, T):
         self.graph = graph
         self.M = M
         self.source = source
         self.destination = destination
+        self.T = T
 
     def run(self, path):
-        assert path[0][0] == self.source and path[-1][1] == self.destination
+        assert self.graph.edges[path[0]][0] == self.source and self.graph.edges[path[-1]][1] == self.destination
         cost = self.graph.path_cost(path)
         p = 1 / (1 + np.exp(cost - self.M))
         return 1 if np.random.random() < p else 0
 
-    def expected_reward(self, path):
-        assert path[0][0] == self.source and path[-1][1] == self.destination
-        cost = self.graph.path_cost(path)
+    def expected_reward(self, path, edge_costs=None):
+        assert self.graph.edges[path[0]][0] == self.source and self.graph.edges[path[-1]][1] == self.destination
+        cost = self.graph.path_cost(path, edge_costs)
         return 1 / (1 + np.exp(cost - self.M))
 
     def best_action(self):
@@ -40,4 +41,4 @@ if __name__ == '__main__':
         (2, 3),
     ], [1, 2, 3, 4])
     bandit = Bandit(g, 4, 0, 3)
-    print(bandit.run([(0, 1), (1, 3)]))
+    print(bandit.run([0, 2]))
