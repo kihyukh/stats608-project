@@ -5,7 +5,7 @@ import scipy as sp
 import util
 
 class LangevinSampler(Sampler):
-    B = 10
+    B = 15
     epsilon = 0.001
 
     def __init__(self, bandit: Bandit, alpha, beta):

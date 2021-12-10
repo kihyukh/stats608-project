@@ -1,19 +1,53 @@
 from graph import Graph
+from bandit import Bandit
+from samplers.langevin import LangevinSampler
+from algorithm import Algorithm
+from simulator import Simulator
 import networkx as nx
 import matplotlib.pyplot as plt
+from demo import demo_graph1
+
+def _show_action(graph: Graph, action):
+    G = graph.to_graph().copy()
+
+    edge_color = ['k'] * len(graph.edges)
+    for a in action:
+        edge_color[a] = 'r'
+    nx.draw(
+        G,
+        pos=graph.get_layout(),
+        edge_color=edge_color,
+        width=[(1 / c) ** 2 for c in graph.costs],
+    )
+
 
 class Animator:
-    def __init__(self, graph: Graph):
-        self.graph = graph
+    def __init__(self, simulator: Simulator):
+        self.simulator = simulator
+        self.graph = simulator.bandit.graph
 
-    def show(self):
-        G = self.graph.to_graph()
-        nx.draw(G, pos=self.graph.get_layout())
+    def show_action(self, action):
+        _show_action(self.graph, action)
+
+    def show_graph(self):
+        _show_action(self.graph, [])
+
+    def run(self):
+        with plt.ion():
+            for t, a, r, regret in self.simulator:
+                print(t, a, regret / t)
+                self.show_action(a)
+                plt.pause(0.001)
+                self.show_graph()
+                plt.pause(0.001)
         plt.show()
 
-
 if __name__ == '__main__':
-    from demo import demo_graph1
     g = demo_graph1()
-    animator = Animator(g)
-    animator.show()
+    bandit = Bandit(
+        graph=g, M=4, source=0, destination=11, T=100)
+    sampler = LangevinSampler(bandit, 2, 2)
+    algorithm = Algorithm(bandit, sampler)
+    sim = Simulator(bandit, algorithm)
+    animator = Animator(sim)
+    animator.run()

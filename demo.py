@@ -75,3 +75,7 @@ def demo_graph2():
         }
     )
     return g
+
+
+if __name__ == '__main__':
+    pass
