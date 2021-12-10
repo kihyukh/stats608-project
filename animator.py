@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from demo import demo_graph1
 
 def _show_action(graph: Graph, action):
-    G = graph.to_graph().copy()
+    G = graph.to_graph()
 
     edge_color = ['k'] * len(graph.edges)
     for a in action:
@@ -17,7 +17,7 @@ def _show_action(graph: Graph, action):
         G,
         pos=graph.get_layout(),
         edge_color=edge_color,
-        width=[(1 / c) ** 2 for c in graph.costs],
+        width=[(1 / c) for c in graph.costs],
     )
 
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     g = demo_graph1()
     bandit = Bandit(
         graph=g, M=4, source=0, destination=11, T=100)
-    sampler = LangevinSampler(bandit, 2, 2)
+    sampler = LangevinSampler(bandit, 3, 3)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)
     animator = Animator(sim)

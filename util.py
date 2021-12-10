@@ -28,14 +28,20 @@ def gradient_hessian(theta, bandit: Bandit, history, t, alpha, beta):
 
 def find_mode(bandit: Bandit, history, t, alpha, beta, theta_0=None):
     assert len(history) >= t - 1
+    #assert np.min(theta_0) > 0
     E = len(bandit.graph.edges)
     theta = np.array([2.0] * E) if theta_0 is None else theta_0
     for _ in range(20):
         gradient, hessian = gradient_hessian(
             theta, bandit, history, t, alpha, beta)
         target = theta - np.linalg.inv(hessian) @ gradient
-        if np.min(target) <= 0:
-            target = theta - np.linalg.inv(hessian) @ gradient * 0.1
+        n = 1
+        while np.min(target) <= 0:
+            target = theta - np.linalg.inv(hessian) @ gradient * (2 ** (-n))
+            n += 1
+            if n >= 16:
+                print(theta)
+                raise
         if np.max(np.abs(target - theta)) < 0.00001:
             break
         theta = target

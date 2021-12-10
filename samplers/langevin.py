@@ -5,8 +5,8 @@ import scipy as sp
 import util
 
 class LangevinSampler(Sampler):
-    B = 15
-    epsilon = 0.001
+    B = 100
+    epsilon = 0.01
 
     def __init__(self, bandit: Bandit, alpha, beta):
         super().__init__(bandit, alpha, beta)
@@ -19,9 +19,9 @@ class LangevinSampler(Sampler):
         self.history.append((a, r))
 
     def sample(self, t):
-        theta_0 = self.modes[max(0, t - 2)].copy()
         theta = util.find_mode(
-            self.bandit, self.history, t, self.alpha, self.beta, theta_0=theta_0)
+            self.bandit, self.history, t, self.alpha, self.beta)
+        assert np.min(theta) > 0
         self.modes[t - 1] = theta
 
         _, hessian = util.gradient_hessian(
