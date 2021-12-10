@@ -1,6 +1,6 @@
 from bandit import Bandit
 from algorithm import Algorithm
-from graph import Graph
+from graph import Graph, demo_graph1
 from samplers.random import RandomSampler
 from samplers.laplace import LaplaceSampler
 from samplers.langevin import LangevinSampler
@@ -30,15 +30,11 @@ class Simulator:
         return (self.t, a, r, self.regret)
 
 if __name__ == '__main__':
-    g = Graph(4, [
-        (0, 1),
-        (0, 2),
-        (1, 3),
-        (2, 3),
-    ], [1, 2, 3, 4])
-    bandit = Bandit(g, 4, 0, 3, 1000)
-    sampler = LangevinSampler(bandit, 2, 2)
+    g = demo_graph1()
+    bandit = Bandit(
+        graph=g, M=2, source=0, destination=11, T=1000)
+    sampler = LangevinSampler(bandit, 1.5, 1.5)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)
     for t, a, r, regret in sim:
-        print(a, regret / t)
+        print(t, a, regret / t)

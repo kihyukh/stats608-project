@@ -1,17 +1,18 @@
 import numpy as np
+import networkx as nx
 import heapq as hq
 
 class Graph:
 
-    def __init__(self, num_vertices, edges, costs):
+    def __init__(self, num_vertices, edge_cost_map):
         self.num_vertices = num_vertices
-        self.edges = edges
-        self.costs = costs
+        self.edges = list(edge_cost_map.keys())
+        self.costs = list(edge_cost_map.values())
         self.edge_lists = {
-            k: [i for i, e in enumerate(edges) if e[0] == k] for k in range(num_vertices)
+            k: [i for i, e in enumerate(self.edges) if e[0] == k] for k in range(num_vertices)
         }
         self.edge_index_map = {
-            (u, v): i for i, (u, v) in enumerate(edges)
+            (u, v): i for i, (u, v) in enumerate(self.edges)
         }
 
     def is_path(self, path):
@@ -57,14 +58,44 @@ class Graph:
         ret.reverse()
         return ret
 
+    def to_graph(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(self.num_vertices))
+        G.add_edges_from(self.edges)
+        return G
+
+
+def demo_graph1():
+    g = Graph(
+        12,
+        {
+            (0, 1): 1,
+            (0, 2): 1,
+            (0, 3): 1,
+            (0, 4): 1,
+            (0, 5): 1,
+            (1, 6): 1,
+            (2, 6): 1,
+            (3, 7): 0.5,
+            (4, 8): 1,
+            (5, 8): 1,
+            (6, 9): 1,
+            (7, 9): 1,
+            (7, 10): 1,
+            (8, 10): 1,
+            (9, 11): 0.5,
+            (10, 11): 1,
+        }
+    )
+    return g
 
 if __name__ == '__main__':
-    g = Graph(4, [
-        (0, 1),
-        (0, 2),
-        (1, 3),
-        (2, 3),
-    ], [1, 2, 3, 4])
+    g = demo_graph1()
 
-    print(g.edge_lists)
-    print(g.shortest_path(0, 3))
+    import numpy as np
+    import networkx as nx
+    import matplotlib.pyplot as plt
+
+    G = g.to_graph()
+    nx.draw_kamada_kawai(G)
+    plt.show()

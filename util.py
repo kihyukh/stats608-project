@@ -42,6 +42,6 @@ def find_mode(bandit: Bandit, history, t, alpha, beta, theta_0=None):
     return theta
 
 def sqrtm(A):
-    evalues, evectors = np.linalg.eig(A)
+    evalues, evectors = np.linalg.eigh(A)
     assert (evalues >= 0).all()
     return evectors @ np.diag(np.sqrt(evalues)) @ np.linalg.inv(evectors)
