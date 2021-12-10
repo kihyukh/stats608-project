@@ -38,6 +38,7 @@ class Animator:
                 print(t, a, regret / t)
                 self.show_action(a)
                 plt.pause(0.001)
+                plt.clf()
                 self.show_graph()
                 plt.pause(0.001)
         plt.show()
@@ -45,7 +46,7 @@ class Animator:
 if __name__ == '__main__':
     g = demo_graph1()
     bandit = Bandit(
-        graph=g, M=4, source=0, destination=11, T=100)
+        graph=g, M=3, source=0, destination=11, T=100)
     sampler = LangevinSampler(bandit, 3, 3)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)

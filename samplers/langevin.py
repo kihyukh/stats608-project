@@ -12,7 +12,6 @@ class LangevinSampler(Sampler):
         super().__init__(bandit, alpha, beta)
         self.history = []
         E = len(bandit.graph.edges)
-        self.modes = [np.array([2.0] * E)] * bandit.T
 
     def update(self, t, a, r):
         assert len(self.history) == t - 1
@@ -22,7 +21,6 @@ class LangevinSampler(Sampler):
         theta = util.find_mode(
             self.bandit, self.history, t, self.alpha, self.beta)
         assert np.min(theta) > 0
-        self.modes[t - 1] = theta
 
         _, hessian = util.gradient_hessian(
             theta, self.bandit, self.history, t, self.alpha, self.beta)
