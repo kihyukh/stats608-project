@@ -1,6 +1,7 @@
 from bandit import Bandit
 from algorithm import Algorithm
-from graph import Graph, demo_graph1, demo_graph2
+from graph import Graph,
+from demo import demo_graph1, demo_graph2
 from samplers.random import RandomSampler
 from samplers.laplace import LaplaceSampler
 from samplers.langevin import LangevinSampler

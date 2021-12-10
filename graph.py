@@ -3,8 +3,9 @@ import networkx as nx
 import heapq as hq
 
 class Graph:
+    _nx_graph = None
 
-    def __init__(self, num_vertices, edge_cost_map):
+    def __init__(self, num_vertices, edge_cost_map, pos=None):
         self.num_vertices = num_vertices
         self.edges = list(edge_cost_map.keys())
         self.costs = list(edge_cost_map.values())
@@ -14,6 +15,7 @@ class Graph:
         self.edge_index_map = {
             (u, v): i for i, (u, v) in enumerate(self.edges)
         }
+        self.pos = pos
 
     def is_path(self, path):
         for i, p in enumerate(path):
@@ -59,64 +61,24 @@ class Graph:
         return ret
 
     def to_graph(self):
+        if self._nx_graph is not None:
+            return self._nx_graph
         G = nx.Graph()
         G.add_nodes_from(range(self.num_vertices))
         G.add_edges_from(self.edges)
+        self._nx_graph = G
         return G
 
+    def get_layout(self):
+        if self.pos is not None:
+            return self.pos
+        return nx.kamada_kawai_layout(self.to_graph())
 
-def demo_graph1():
-    g = Graph(
-        12,
-        {
-            (0, 1): 1,
-            (0, 2): 1,
-            (0, 3): 1,
-            (0, 4): 1,
-            (0, 5): 1,
-            (1, 6): 1,
-            (2, 6): 1,
-            (3, 7): 0.5,
-            (4, 8): 1,
-            (5, 8): 1,
-            (6, 9): 1,
-            (7, 9): 1,
-            (7, 10): 1,
-            (8, 10): 1,
-            (9, 11): 0.5,
-            (10, 11): 1,
-        }
-    )
-    return g
-
-def demo_graph2():
-    g = Graph(
-        12,
-        {
-            (0, 1): 1,
-            (0, 2): 1,
-            (0, 3): 1,
-            (0, 4): 0.5,
-            (0, 5): 1,
-            (1, 6): 1,
-            (2, 6): 1,
-            (3, 7): 0.5,
-            (4, 8): 0.5,
-            (5, 8): 1,
-            (6, 9): 1,
-            (7, 9): 1,
-            (7, 10): 1,
-            (8, 10): 0.5,
-            (9, 11): 0.5,
-            (10, 11): 1,
-        }
-    )
-    return g
 
 if __name__ == '__main__':
+    from demo import demo_graph1
     g = demo_graph1()
 
-    import numpy as np
     import networkx as nx
     import matplotlib.pyplot as plt
 
