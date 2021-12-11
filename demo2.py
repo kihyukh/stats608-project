@@ -5,6 +5,7 @@ from bandits.switching_bandit import SwitchingBandit
 from algorithm import Algorithm
 from simulator import Simulator
 from animator import Animator
+import numpy as np
 
 def demo_graph1():
     g = Graph(
@@ -21,7 +22,7 @@ def demo_graph1():
             (4, 8): 1,
             (5, 8): 1,
             (6, 9): 1,
-            (7, 9): 1,
+            (7, 9): 0.2,
             (7, 10): 1,
             (8, 10): 1,
             (9, 11): 0.2,
@@ -55,14 +56,14 @@ def demo_graph2():
             (0, 5): 1,
             (1, 6): 1,
             (2, 6): 1,
-            (3, 7): 0.2,
+            (3, 7): 1,
             (4, 8): 0.2,
             (5, 8): 1,
             (6, 9): 1,
             (7, 9): 1,
             (7, 10): 1,
             (8, 10): 0.2,
-            (9, 11): 0.2,
+            (9, 11): 1,
             (10, 11): 1,
         },
         {

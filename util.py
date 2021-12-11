@@ -1,5 +1,6 @@
 from bandits.bandit import Bandit
 import numpy as np
+import random
 
 def gradient_hessian(theta, bandit: Bandit, history, alpha, beta):
     E = len(bandit.graph.edges)
@@ -50,15 +51,33 @@ def sqrtm(A):
     assert (evalues >= 0).all()
     return evectors @ np.diag(np.sqrt(evalues)) @ np.linalg.inv(evectors)
 
-def stochastic_sampling(history, t, stochastic):
-    if t == 1:
-        ret = []
-    elif stochastic:
-        if stochastic >= t - 1:
-            ret = history[:t - 1]
-        else:
-            rand_indices = np.random.choice(range(t - 1), stochastic, replace=False)
-            ret = [history[a] for a in rand_indices]
-    else:
-        ret = history[:t - 1]
-    return ret
+def stochastic_sampling(history, stochastic):
+    if not history:
+        return []
+    if not stochastic:
+        return history
+    if stochastic >= len(history):
+        return history
+    indices = np.random.choice(range(len(history)), stochastic, replace=False)
+    return [history[i] for i in indices]
+
+def langevin_sampling(bandit: Bandit, history, alpha, beta, epsilon, stochastic, B):
+    theta = find_mode(bandit, history, alpha, beta)
+    assert np.min(theta) > 0
+    _, hessian = gradient_hessian(
+        theta, bandit, history, alpha, beta)
+    A = -np.linalg.inv(hessian)
+    A_sqrt = sqrtm(A)
+
+    E = len(bandit.graph.edges)
+    for b in range(B):
+        h = stochastic_sampling(history, stochastic)
+        gradient, _ = gradient_hessian(
+            theta, bandit, h, alpha, beta)
+        W = np.random.normal(0, 1, E)
+        theta += (
+            epsilon * (A @ gradient) +
+            np.sqrt(2 * epsilon) * (A_sqrt @ W)
+        )
+
+    return theta
