@@ -1,4 +1,4 @@
-from bandit import Bandit
+from bandits.bandit import Bandit
 from algorithm import Algorithm
 from graph import Graph
 from demo import demo_graph1, demo_graph2

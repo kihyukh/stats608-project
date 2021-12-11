@@ -1,4 +1,4 @@
-from bandit import Bandit
+from bandits.bandit import Bandit
 from samplers.sampler import Sampler
 import numpy as np
 

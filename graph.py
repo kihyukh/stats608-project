@@ -10,7 +10,9 @@ class Graph:
         self.edges = list(edge_cost_map.keys())
         self.costs = list(edge_cost_map.values())
         self.edge_lists = {
-            k: [i for i, e in enumerate(self.edges) if e[0] == k] for k in range(num_vertices)
+            k: [
+                i for i, e in enumerate(self.edges) if e[0] == k
+            ] for k in range(num_vertices)
         }
         self.edge_index_map = {
             (u, v): i for i, (u, v) in enumerate(self.edges)
@@ -24,6 +26,10 @@ class Graph:
             if i > 0 and self.edges[path[i - 1]][1] != self.edges[p][0]:
                 return False
         return True
+
+    def update_costs(self, costs):
+        self.costs = costs
+        self._nx_graph = None
 
     def path_cost(self, path, costs=None):
         assert self.is_path(path)

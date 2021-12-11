@@ -1,5 +1,5 @@
 from samplers.sampler import Sampler
-from bandit import Bandit
+from bandits.bandit import Bandit
 import numpy as np
 import scipy as sp
 import util

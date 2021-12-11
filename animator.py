@@ -1,5 +1,5 @@
 from graph import Graph
-from bandit import Bandit
+from bandits.bandit import Bandit
 from samplers.langevin import LangevinSampler
 from algorithm import Algorithm
 from simulator import Simulator

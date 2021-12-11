@@ -1,4 +1,4 @@
-from bandit import Bandit
+from bandits.bandit import Bandit
 import numpy as np
 
 def gradient_hessian(theta, bandit: Bandit, history, alpha, beta):
