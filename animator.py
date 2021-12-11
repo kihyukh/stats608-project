@@ -12,13 +12,17 @@ def _show_action(graph: Graph, action):
     G = graph.to_graph()
 
     edge_color = ['k'] * len(graph.edges)
+    node_color = ['k'] * graph.num_vertices
     for a in action:
         edge_color[a] = 'r'
+        node_color[graph.edges[a][0]] = 'r'
+        node_color[graph.edges[a][1]] = 'r'
     nx.draw(
         G,
         pos=graph.get_layout(),
         edge_color=edge_color,
-        width=[(1 / c) for c in graph.costs],
+        node_color=node_color,
+        width=[max(1.5, (1 / c)) for c in graph.costs],
     )
 
 
