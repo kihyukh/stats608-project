@@ -6,7 +6,6 @@ from algorithm import Algorithm
 from simulator import Simulator
 import networkx as nx
 import matplotlib.pyplot as plt
-from demo import demo_graph1
 
 def _show_action(graph: Graph, action):
     G = graph.to_graph()
@@ -29,31 +28,21 @@ def _show_action(graph: Graph, action):
 class Animator:
     def __init__(self, simulator: Simulator):
         self.simulator = simulator
-        self.graph = simulator.bandit.graph
+        self.bandit = simulator.bandit
 
-    def show_action(self, action):
-        _show_action(self.graph, action)
+    def show_action(self, t, action):
+        _show_action(self.bandit.get_graph(t), action)
 
-    def show_graph(self):
-        _show_action(self.graph, [])
+    def show_graph(self, t):
+        _show_action(self.bandit.get_graph(t), [])
 
     def run(self):
         with plt.ion():
             for t, a, r, regret in self.simulator:
                 print(t, a, regret / t)
-                self.show_action(a)
+                self.show_action(t, a)
                 plt.pause(0.001)
                 plt.clf()
-                self.show_graph()
+                self.show_graph(t)
                 plt.pause(0.001)
         plt.show()
-
-if __name__ == '__main__':
-    g = demo_graph1()
-    bandit = SimpleBandit(
-        graph=g, M=3, source=0, destination=11, T=200)
-    sampler = LangevinSampler(bandit, 2, 0.3, stochastic=50)
-    algorithm = Algorithm(bandit, sampler)
-    sim = Simulator(bandit, algorithm)
-    animator = Animator(sim)
-    animator.run()

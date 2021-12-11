@@ -11,6 +11,9 @@ class Bandit(ABC):
         self.destination = destination
         self.T = T
 
+    def get_graph(self, t):
+        return self.graph
+
     @abstractmethod
     def run(self, t, action):
         pass

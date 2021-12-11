@@ -1,10 +1,10 @@
 from graph import Graph
 from samplers.langevin import LangevinSampler
 from bandits.simple_bandit import SimpleBandit
+from bandits.switching_bandit import SwitchingBandit
 from algorithm import Algorithm
 from simulator import Simulator
 from animator import Animator
-import numpy as np
 
 def demo_graph1():
     g = Graph(
@@ -84,11 +84,13 @@ def demo_graph2():
 
 if __name__ == '__main__':
     np.random.seed(608)
-    g = demo_graph1()
-    bandit = SimpleBandit(
-        graph=g, M=3, source=0, destination=11, T=200)
-    sampler = LangevinSampler(bandit, 2, 0.3, stochastic=50)
-    algorithm = Algorithm(bandit, sampler)
+    bandit1 = SimpleBandit(
+        graph=demo_graph1(), M=3, source=0, destination=11, T=200)
+    bandit2 = SimpleBandit(
+        graph=demo_graph2(), M=3, source=0, destination=11, T=200)
+    bandit = SwitchingBandit(bandit1, bandit2, 101)
+    sampler = LangevinSampler(bandit1, 2, 0.3, stochastic=50)
+    algorithm = Algorithm(bandit1, sampler)
     sim = Simulator(bandit, algorithm)
     animator = Animator(sim)
     animator.run()
