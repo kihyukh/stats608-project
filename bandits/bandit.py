@@ -1,10 +1,9 @@
 import numpy as np
 from graph import Graph
+from abc import ABC, abstractmethod
 
-class Bandit:
-    _best_action = None
-    _best_reward = None
 
+class Bandit(ABC):
     def __init__(self, graph: Graph, M, source, destination, T):
         self.graph = graph
         self.M = M
@@ -12,33 +11,18 @@ class Bandit:
         self.destination = destination
         self.T = T
 
-    def run(self, path):
-        assert self.graph.edges[path[0]][0] == self.source and self.graph.edges[path[-1]][1] == self.destination
-        cost = self.graph.path_cost(path)
-        p = 1 / (1 + np.exp(cost - self.M))
-        return 1 if np.random.random() < p else 0
+    @abstractmethod
+    def run(self, t, action):
+        pass
 
-    def expected_reward(self, path, edge_costs=None):
-        assert self.graph.edges[path[0]][0] == self.source and self.graph.edges[path[-1]][1] == self.destination
-        cost = self.graph.path_cost(path, edge_costs)
-        return 1 / (1 + np.exp(cost - self.M))
+    @abstractmethod
+    def expected_reward(self, t, action):
+        pass
 
-    def best_action(self):
-        if self._best_action is None:
-            self._best_action = self.graph.shortest_path(self.source, self.destination)
-        return self._best_action
+    @abstractmethod
+    def best_action(self, t):
+        pass
 
-    def best_reward(self):
-        if self._best_reward is None:
-            self._best_reward = self.expected_reward(self.best_action())
-        return self._best_reward
-
-if __name__ == '__main__':
-    g = Graph(4, [
-        (0, 1),
-        (0, 2),
-        (1, 3),
-        (2, 3),
-    ], [1, 2, 3, 4])
-    bandit = Bandit(g, 4, 0, 3)
-    print(bandit.run([0, 2]))
+    @abstractmethod
+    def best_reward(self, t):
+        pass

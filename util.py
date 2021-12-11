@@ -4,7 +4,7 @@ import numpy as np
 def gradient_hessian(theta, bandit: Bandit, history, alpha, beta):
     E = len(bandit.graph.edges)
     p = np.array([
-        bandit.expected_reward(a, theta)
+        bandit.expected_reward(1, a, theta)
         for i, (a, r) in enumerate(history)
     ])
     y = np.array([r for i, (a, r) in enumerate(history)])

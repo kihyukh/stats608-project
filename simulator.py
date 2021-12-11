@@ -25,8 +25,8 @@ class Simulator:
         if self.t > self.bandit.T:
             raise StopIteration
         a = self.algorithm.action(self.t)
-        r = self.bandit.run(a)
-        self.regret += self.bandit.best_reward() - self.bandit.expected_reward(a)
+        r = self.bandit.run(self.t, a)
+        self.regret += self.bandit.best_reward(self.t) - self.bandit.expected_reward(self.t, a)
         self.algorithm.update(self.t, a, r)
         return (self.t, a, r, self.regret)
 
