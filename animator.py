@@ -52,7 +52,7 @@ if __name__ == '__main__':
     g = demo_graph1()
     bandit = SimpleBandit(
         graph=g, M=3, source=0, destination=11, T=200)
-    sampler = LangevinSampler(bandit, 2, 2, stochastic=50)
+    sampler = LangevinSampler(bandit, 2, 0.3, stochastic=50)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)
     animator = Animator(sim)
