@@ -84,11 +84,11 @@ def demo_graph2():
     return g
 
 if __name__ == '__main__':
-    np.random.seed(2)
+    np.random.seed(608)
     g = demo_graph1()
     bandit = SimpleBandit(
-        graph=g, M=3, source=0, destination=11, T=200)
-    sampler = LangevinSampler(bandit, 2, 0.3, stochastic=50)
+        graph=g, M=3, source=0, destination=11, T=1000)
+    sampler = LangevinSampler(bandit, 2, 0.2, stochastic=50)
     algorithm = Algorithm(bandit, sampler)
     sim = Simulator(bandit, algorithm)
     animator = Animator(sim)

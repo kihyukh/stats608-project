@@ -1,4 +1,3 @@
-from demo import demo_graph1, demo_graph2
 from bandits.simple_bandit import SimpleBandit
 from bandits.bandit import Bandit
 

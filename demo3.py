@@ -1,5 +1,5 @@
 from graph import Graph
-from samplers.langevin_gibbs import LangevinGibbsSampler
+from samplers.langevin import LangevinSampler
 from bandits.simple_bandit import SimpleBandit
 from bandits.switching_bandit import SwitchingBandit
 from algorithm import Algorithm
@@ -22,7 +22,7 @@ def demo_graph1():
             (4, 8): 1,
             (5, 8): 1,
             (6, 9): 1,
-            (7, 9): 0.2,
+            (7, 9): 1,
             (7, 10): 1,
             (8, 10): 1,
             (9, 11): 0.2,
@@ -56,15 +56,15 @@ def demo_graph2():
             (0, 5): 1,
             (1, 6): 1,
             (2, 6): 1,
-            (3, 7): 1,
+            (3, 7): 0.2,
             (4, 8): 0.2,
             (5, 8): 1,
             (6, 9): 1,
             (7, 9): 1,
             (7, 10): 1,
             (8, 10): 0.2,
-            (9, 11): 1,
-            (10, 11): 1,
+            (9, 11): 0.2,
+            (10, 11): 0.2,
         },
         {
             0: [-1, 0],
@@ -84,14 +84,15 @@ def demo_graph2():
     return g
 
 if __name__ == '__main__':
-    np.random.seed(2)
+    np.random.seed(608)
     bandit1 = SimpleBandit(
-        graph=demo_graph1(), M=3, source=0, destination=11, T=200)
+        graph=demo_graph1(), M=3, source=0, destination=11, T=1000)
     bandit2 = SimpleBandit(
-        graph=demo_graph2(), M=3, source=0, destination=11, T=200)
-    bandit = SwitchingBandit(bandit1, bandit2, 101)
-    sampler = LangevinGibbsSampler(bandit, 2, 0.3, stochastic=50)
+        graph=demo_graph2(), M=3, source=0, destination=11, T=1000)
+    bandit = SwitchingBandit(bandit1, bandit2, 501)
+    sampler = LangevinSampler(bandit1, 2, 0.2, stochastic=50, window=200)
     algorithm = Algorithm(bandit1, sampler)
-    sim = Simulator(bandit, algorithm)
-    animator = Animator(sim)
-    animator.run()
+    with open('log/demo3.txt', 'w') as f:
+        sim = Simulator(bandit, algorithm)
+        animator = Animator(sim)
+        animator.run()
