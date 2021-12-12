@@ -38,6 +38,9 @@ class Graph:
 
     def shortest_path(self, source, destination, costs=None):
         costs = self.costs if costs is None else costs
+        costs = np.array(costs)
+        if np.min(costs) < 0:
+            costs += np.abs(np.min(costs))
         visited = [False] * self.num_vertices
         weights = [np.infty] * self.num_vertices
         path = [None] * self.num_vertices
