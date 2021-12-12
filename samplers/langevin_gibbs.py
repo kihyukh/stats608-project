@@ -6,7 +6,7 @@ import util
 
 class LangevinGibbsSampler(Sampler):
     B = 100
-    GB = 100
+    GB = 20
     epsilon = 0.005
 
     def __init__(self, bandit: Bandit, alpha, beta, stochastic=None):
@@ -77,7 +77,6 @@ class LangevinGibbsSampler(Sampler):
 
     def sample(self, t):
         tau = np.random.choice(range(self.bandit.T)) + 1
-        tau = 101
         theta1, theta2 = None, None
         for _ in range(self.GB):
             theta1, theta2 = self._sample_theta(t, tau)
