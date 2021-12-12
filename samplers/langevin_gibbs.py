@@ -6,8 +6,8 @@ import util
 
 class LangevinGibbsSampler(Sampler):
     B = 100
-    GB = 20
-    epsilon = 0.01
+    GB = 100
+    epsilon = 0.005
 
     def __init__(self, bandit: Bandit, alpha, beta, stochastic=None):
         super().__init__(bandit, alpha, beta)

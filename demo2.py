@@ -93,6 +93,6 @@ if __name__ == '__main__':
     sampler = LangevinSampler(bandit1, 2, 0.2, stochastic=50)
     algorithm = Algorithm(bandit1, sampler)
     with open('log/demo2.txt', 'w') as f:
-        sim = Simulator(bandit, algorithm)
+        sim = Simulator(bandit, algorithm, logger=f)
         animator = Animator(sim)
         animator.run()
