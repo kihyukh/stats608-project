@@ -94,5 +94,5 @@ if __name__ == '__main__':
     algorithm = Algorithm(bandit1, sampler)
     with open('log/demo4.txt', 'w') as f:
         sim = Simulator(bandit, algorithm, logger=f)
-        animator = Animator(sim)
-        animator.run()
+        for t, a, r, regret in sim:
+            print(t, a, regret / t)

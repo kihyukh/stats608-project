@@ -7,7 +7,7 @@ import util
 class LangevinGibbsSampler(Sampler):
     B = 100
     GB = 20
-    epsilon = 0.005
+    epsilon = 0.01
 
     def __init__(self, bandit: Bandit, alpha, beta, stochastic=None):
         super().__init__(bandit, alpha, beta)
@@ -81,5 +81,4 @@ class LangevinGibbsSampler(Sampler):
         for _ in range(self.GB):
             theta1, theta2 = self._sample_theta(t, tau)
             tau = self._sample_tau(t, theta1, theta2)
-
         return theta1 if t < tau else theta2
