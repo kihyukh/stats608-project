@@ -6,7 +6,7 @@ import util
 
 class LangevinSampler(Sampler):
     B = 100
-    epsilon = 0.01
+    epsilon = 0.005
 
     def __init__(self, bandit: Bandit, alpha, beta, stochastic=None):
         super().__init__(bandit, alpha, beta)

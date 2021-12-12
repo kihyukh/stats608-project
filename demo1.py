@@ -84,7 +84,7 @@ def demo_graph2():
     return g
 
 if __name__ == '__main__':
-    np.random.seed(608)
+    np.random.seed(2)
     g = demo_graph1()
     bandit = SimpleBandit(
         graph=g, M=3, source=0, destination=11, T=200)
