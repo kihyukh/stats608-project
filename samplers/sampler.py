@@ -14,4 +14,4 @@ class Sampler(ABC):
 
     @abstractmethod
     def sample(self, t):
-        return np.random.random(len(self.bandit.graph.edges))
+        return np.random.random(len(self.bandit.graph.edges)), ''

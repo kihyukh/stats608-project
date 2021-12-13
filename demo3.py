@@ -90,9 +90,9 @@ if __name__ == '__main__':
     bandit2 = SimpleBandit(
         graph=demo_graph2(), M=3, source=0, destination=11, T=1000)
     bandit = SwitchingBandit(bandit1, bandit2, 501)
-    sampler = LangevinSampler(bandit1, 2, 0.2, stochastic=100, window=100)
+    sampler = LangevinSampler(bandit1, 2, 0.2, stochastic=100, window=80)
     algorithm = Algorithm(bandit1, sampler)
-    with open('log/demo3_100.txt', 'w') as f:
+    with open('log/demo3_80.txt', 'w') as f:
         sim = Simulator(bandit, algorithm, logger=f)
         for t, a, r, regret in sim:
             print(t, a, regret / t)

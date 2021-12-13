@@ -22,14 +22,13 @@ for i, filename in enumerate(args.log.split(',')):
     regret = []
     with open(filename, 'r') as f:
         for line in f:
-            t, a, y, r = line.rstrip().split('\t')
+            t, a, y, r = line.rstrip().split('\t', 3)
             ts.append(int(t))
-            regret.append(float(r) / int(t))
+            regret.append(float(r.split('\t')[0]) / int(t))
     sns.lineplot(x=ts, y=regret, label=labels[i] if labels else '')
 
 if args.vertical:
     plt.axvline(x=float(args.vertical), linestyle='--', color='r')
 
-plt.xlabel('time')
 plt.ylabel('average regret')
 plt.show()

@@ -6,8 +6,8 @@ import util
 
 class LangevinGibbsSampler(Sampler):
     B = 100
-    GB = 20
-    epsilon = 0.01
+    GB = 100
+    epsilon = 0.005
 
     def __init__(self, bandit: Bandit, alpha, beta, stochastic=None):
         super().__init__(bandit, alpha, beta)
@@ -41,7 +41,17 @@ class LangevinGibbsSampler(Sampler):
             self.B)
         return theta1, theta2
 
-    def _sample_tau(self, t, theta1, theta2):
+    def _sample_theta1(self, t):
+        return util.langevin_sampling(
+            self.bandit.bandit1,
+            self.history[:t - 1],
+            self.alpha,
+            self.beta,
+            self.epsilon,
+            self.stochastic,
+            self.B)
+
+    def _posterior_tau(self, t, theta1, theta2):
         history = self.history[:t - 1]
         path_cost_1 = np.array([
             sum([theta1[e] for e in path]) for path, _ in history
@@ -60,25 +70,35 @@ class LangevinGibbsSampler(Sampler):
         )
         cumsum_log_f1 = np.cumsum(log_f1)
         rev_cumsum_log_f2 = np.cumsum(log_f2[::-1])[::-1]
-        log_f_tau = [0.] * self.bandit.T
-        if t > 1:
-            for tau in range(self.bandit.T):
-                if tau == 0:
-                    log_f_tau[tau] = rev_cumsum_log_f2[tau]
-                elif tau > 0 and tau < t - 1:
-                    log_f_tau[tau] = cumsum_log_f1[tau - 1] + rev_cumsum_log_f2[tau]
+        log_f_tau = [0.] * (t - 200)
+        if t - 200 > 1:
+            for tau in range(t - 200):
+                if tau < t - 1 - 200:
+                    log_f_tau[tau] = cumsum_log_f1[tau + 200 - 1] + rev_cumsum_log_f2[tau + 200]
                 else:
                     log_f_tau[tau] = cumsum_log_f1[t - 2]
         log_f_tau = np.array(log_f_tau)
         log_f_tau -= np.max(log_f_tau)
         f_tau = np.exp(log_f_tau)
         p = f_tau / np.sum(f_tau)
-        return np.random.choice(range(self.bandit.T), 1, p=p)[0] + 1
+        return p
 
     def sample(self, t):
-        tau = np.random.choice(range(self.bandit.T)) + 1
+        if t <= 200:
+            return self._sample_theta1(t), []
+        tau_p = [0.] * (t - 200)
+        tau = max(201, int((t - 1 + 200) / 2))
         theta1, theta2 = None, None
-        for _ in range(self.GB):
-            theta1, theta2 = self._sample_theta(t, tau)
-            tau = self._sample_tau(t, theta1, theta2)
-        return theta1 if t < tau else theta2
+        gibbs_sample_count = 0
+        for b in range(self.GB):
+            theta1, theta2 = self._sample_theta(t, tau + 200)
+            p = self._posterior_tau(t, theta1, theta2)
+            tau = np.random.choice(range(t - 200), 1, p=p)[0] + 1
+            if b >= 70:
+                gibbs_sample_count += 1
+                tau_p += p
+
+        if gibbs_sample_count:
+            tau_p = tau_p / gibbs_sample_count
+        theta1, theta2 = self._sample_theta(t, tau)
+        return (theta1, tau_p.tolist()) if t < tau else (theta2, tau_p.tolist())

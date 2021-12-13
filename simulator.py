@@ -25,16 +25,17 @@ class Simulator:
         self.t += 1
         if self.t > self.bandit.T:
             raise StopIteration
-        a = self.algorithm.action(self.t)
+        a, info = self.algorithm.action(self.t)
         r = self.bandit.run(self.t, a)
         self.regret += self.bandit.best_reward(self.t) - self.bandit.expected_reward(self.t, a)
         self.algorithm.update(self.t, a, r)
         if self.logger:
             self.logger.write(
-                '{}\t{}\t{}\t{}\n'.format(
+                '{}\t{}\t{}\t{}\t{}\n'.format(
                     self.t,
                     json.dumps(a),
                     r,
-                    self.regret)
+                    self.regret,
+                    json.dumps(info))
             )
         return (self.t, a, r, self.regret)

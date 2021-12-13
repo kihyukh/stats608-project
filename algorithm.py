@@ -11,6 +11,6 @@ class Algorithm:
         self.sampler.update(t, a, r)
 
     def action(self, t):
-        c = self.sampler.sample(t)
+        c, info = self.sampler.sample(t)
         return self.bandit.graph.shortest_path(
-            self.bandit.source, self.bandit.destination, c)
+            self.bandit.source, self.bandit.destination, c), info
