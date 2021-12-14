@@ -30,4 +30,4 @@ class LangevinSampler(Sampler):
             self.beta,
             self.epsilon,
             self.stochastic,
-            self.B)
+            self.B), []

@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--log')
 parser.add_argument('--label')
 parser.add_argument('--vertical')
+parser.add_argument('--t')
 
 args = parser.parse_args()
 
@@ -23,6 +24,9 @@ for i, filename in enumerate(args.log.split(',')):
     with open(filename, 'r') as f:
         for line in f:
             t, a, y, r = line.rstrip().split('\t', 3)
+            if args.t:
+                if int(t) < int(args.t):
+                    continue
             ts.append(int(t))
             regret.append(float(r.split('\t')[0]) / int(t))
     sns.lineplot(x=ts, y=regret, label=labels[i] if labels else '')

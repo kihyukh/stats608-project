@@ -1,11 +1,12 @@
-from graph import Graph
-from samplers.langevin import LangevinSampler
+import argparse
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 from bandits.simple_bandit import SimpleBandit
-from algorithm import Algorithm
 from simulator import Simulator
 from animator import Animator
-import numpy as np
-import random
+from graph import Graph
+import json
 
 def demo_graph1():
     g = Graph(
@@ -64,7 +65,7 @@ def demo_graph2():
             (7, 10): 1,
             (8, 10): 0.2,
             (9, 11): 0.2,
-            (10, 11): 1,
+            (10, 11): 0.2,
         },
         {
             0: [-1, 0],
@@ -83,13 +84,32 @@ def demo_graph2():
     )
     return g
 
-if __name__ == '__main__':
-    np.random.seed(608)
-    g = demo_graph1()
+
+def filestream(filename):
+    for line in open(filename, 'r'):
+        t, a, r, regret = line.rstrip('\n').split('\t', 3)
+        regret = float(regret.split('\t')[0])
+        yield int(t), json.loads(a), int(r), regret
+
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--log')
+parser.add_argument('--bandit')
+
+args = parser.parse_args()
+
+if args.bandit == '1':
     bandit = SimpleBandit(
-        graph=g, M=3, source=0, destination=11, T=1000)
-    sampler = LangevinSampler(bandit, 2, 0.2, stochastic=50)
-    algorithm = Algorithm(bandit, sampler)
-    sim = Simulator(bandit, algorithm)
-    animator = Animator(sim, bandit)
-    animator.run()
+        graph=demo_graph1(), M=3, source=0, destination=11, T=1000)
+else:
+    bandit1 = SimpleBandit(
+        graph=demo_graph1(), M=3, source=0, destination=11, T=1000)
+    bandit2 = SimpleBandit(
+        graph=demo_graph2(), M=3, source=0, destination=11, T=1000)
+    bandit = SwitchingBandit(bandit1, bandit2, 501)
+
+filename = args.log
+
+simulator = filestream(filename)
+animator = Animator(simulator, bandit, pause=0.000001)
+animator.run()
