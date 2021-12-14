@@ -41,6 +41,7 @@ class Animator:
 
     def show_regret(self, avg_regret, ax):
         ax.plot(list(range(len(avg_regret))), avg_regret, color='k')
+        ax.set_ylim([0, 0.4])
 
     def run(self):
         fig, axs = plt.subplots(2)
